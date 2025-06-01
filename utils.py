@@ -90,6 +90,16 @@ class Point:
     def __repr__(self):
         return "".join(["Point(", str(self.x), ",", str(self.y), ")"])
 
+    def parse(s :str):
+        if s.startswith("Point(") and s.endswith(")"):
+            args = s[len("Point("):-1]  # Supprime "Point(" et ")"
+            x_str, y_str = args.split(",")
+            x = int(x_str.strip())
+            y = int(y_str.strip())
+            return Point(x, y)
+        else:
+            raise ValueError("Format non reconnu pour Point")
+
 
 class PointB:
     def __init__(self, x_init, y_init, a_init=0, r_init=0):

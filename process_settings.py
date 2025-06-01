@@ -116,10 +116,15 @@ class ProcessSettings:
             for line in f:
                 row = line.strip().split('=')
                 if not len(row) == 2: continue
+                value = row[1]
                 try:
-                    value = ast.literal_eval(row[1])
-                    setattr(self, row[0], value)
-                except :
-                    setattr(self, row[0], row[1])
+                    castedValue = ast.literal_eval(value)
+                    setattr(self, row[0], castedValue)
+                except Exception as e:
+                    print(e)
+                    if value.startswith("Point"):
+                        setattr(self, row[0], Point.parse(value))
+                    else:
+                        setattr(self, row[0], value)
                 print(getattr(self, row[0]))
         self.updateMapTypes()

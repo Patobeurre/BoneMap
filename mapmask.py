@@ -24,6 +24,16 @@ class MapMask:
         col[np.isnan(col)] = 0
         self.mask = col
 
+    def flip(self, axis=0):
+        if axis == 0:
+            self.map = np.flipud(self.map)
+            self.mask = np.flip(self.mask)
+        elif axis == 1:
+            self.map = np.fliplr(self.map)
+
+    def shift(self, value :int, axis=1):
+        self.map = np.roll(self.map, value, axis=axis)
+
     def cleanMap(self):
         for row in self.map:
             row[np.isnan(row)] = 0

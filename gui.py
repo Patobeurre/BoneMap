@@ -8,6 +8,7 @@ class MainWindow:
     def loadSettings(self):
         file = filedialog.askopenfilename(defaultextension=".txt")
         self.process_settings.importFromFile(file)
+        print(type(self.process_settings.NB_SECTIONS))
         self.updateUI()
 
     def saveSettings(self):
@@ -21,6 +22,11 @@ class MainWindow:
         self.process.settings = self.process_settings
         if self.isValidSettings:
             self.process.prepare()
+
+
+    def updateProgressBar(self):
+        return
+        #self.progressBar.update(1)
 
     def launchProcess(self):
         self.process_settings.updateMapTypes()
@@ -315,7 +321,11 @@ class MainWindow:
 
         # Launch button
 
-        Button(mainFrame, text="Launch", command=self.launchProcess).grid(row=7, column=0, sticky='se')
+        progressBarFrame = Frame(mainFrame)
+        self.progressBar = ProgressbarWithValue(progressBarFrame, value=0, maximum=100, orient="horizontal", length=200, mode="determinate", takefocus=True)
+        progressBarFrame.grid(row=7, column=0, sticky='news', padx=(0,10))
+
+        Button(mainFrame, text="Launch", command=self.launchProcess).grid(row=7, column=1, sticky='se')
 
 
         mainFrame.grid(sticky='new', padx=10, pady=10)
@@ -391,101 +401,91 @@ class MainWindow:
         print("Output folder path: " + self.process_settings.OUTPUT_DIR_PATH)
 
     def setOperations(self):
-        self.process_settings.bDistance = self.bDistance.get()
-        self.process_settings.bCortical = self.bCortical.get()
-        self.process_settings.bCurv = self.bCurv.get()
-        self.process_settings.bMoments = self.bMoments.get()
-        self.process_settings.bModulus = self.bModulus.get()
-        self.process_settings.bModulusHalf = self.bModulusHalf.get()
+        self.process_settings.bDistance = bool(self.bDistance.get())
+        self.process_settings.bCortical = bool(self.bCortical.get())
+        self.process_settings.bCurv = bool(self.bCurv.get())
+        self.process_settings.bMoments = bool(self.bMoments.get())
+        self.process_settings.bModulus = bool(self.bModulus.get())
+        self.process_settings.bModulusHalf = bool(self.bModulusHalf.get())
 
     def setFlip(self):
-        self.process_settings.bFlip = self.bFlip.get()
-        print("Flip: " + str(self.process_settings.bFlip))
+        self.process_settings.bFlip = bool(self.bFlip.get())
 
     def setRight(self, var, index, mode):
-        self.process_settings.bRight = self.bRight.get()
-        print("is Right: " + str(self.process_settings.bRight))
+        self.process_settings.bRight = bool(self.bRight.get())
 
     def setRotate(self):
-        self.process_settings.bRotate = self.bRotate.get()
+        self.process_settings.bRotate = bool(self.bRotate.get())
         self.updateSpinBoxRotate(self.bRotate.get())
 
     def setRotationAngle(self, var, index, mode):
-        value = self.sectionRotAngle.get()
+        value = float(self.sectionRotAngle.get())
         if value:
             if float(value) > 359:
                 self.sectionRotAngle.set(359)
             if float(value) < -359:
                 self.sectionRotAngle.set(-359)
             self.process_settings.sectionRotAngle = float(value)
-        print(self.process_settings.sectionRotAngle)
 
     def setNbSections(self, var, index, mode):
-        self.process_settings.NB_SECTIONS = self.nbSections.get()
+        self.process_settings.NB_SECTIONS = int(self.nbSections.get())
 
     def setBeginSample(self, var, index, mode):
-        self.process_settings.BEGIN_SAMPLE_PERCENT = self.beginSample.get()
+        self.process_settings.BEGIN_SAMPLE_PERCENT = int(self.beginSample.get())
 
     def setEndSample(self, var, index, mode):
-        self.process_settings.END_SAMPLE_PERCENT = self.endSample.get()
+        self.process_settings.END_SAMPLE_PERCENT = int(self.endSample.get())
 
     def setSkipPrepare(self):
-        self.process_settings.bSkipPrepare = self.bSkipPrepare.get()
+        self.process_settings.bSkipPrepare = bool(self.bSkipPrepare.get())
         self.enablePrepareFrame(not self.process_settings.bSkipPrepare)
 
     def setBlur(self):
-        self.process_settings.bBlur = self.bBlur.get()
+        self.process_settings.bBlur = bool(self.bBlur.get())
 
     def setCaption(self):
-        self.process_settings.bCaption = self.bCaption.get()
+        self.process_settings.bCaption = bool(self.bCaption.get())
 
     def setInterpolate(self):
-        self.process_settings.bInterpolate = self.bInterpolate.get()
+        self.process_settings.bInterpolate = bool(self.bInterpolate.get())
 
     def setInfoSection(self):
-        self.process_settings.bInfoSection = self.bInfoSection.get()
+        self.process_settings.bInfoSection = bool(self.bInfoSection.get())
 
     def setNormMinMax(self):
-        value = self.bNormMinMax.get()
+        value = bool(self.bNormMinMax.get())
         self.process_settings.bNormMinMax = value
         self.enableCustomMinMaxFrame(value)
 
     def setNormMMAD(self):
-        self.process_settings.bNormMMAD = self.bNormMMAD.get()
+        self.process_settings.bNormMMAD = bool(self.bNormMMAD.get())
 
     def setNormAvg(self):
-        self.process_settings.bNormAvg = self.bNormAvg.get()
+        self.process_settings.bNormAvg = bool(self.bNormAvg.get())
 
     def setCustomMin(self, var, index, mode):
-        value = self.customMin.get()
+        value = float(self.customMin.get())
         self.process_settings.customMin = float(value)
-        print(self.process_settings.customMin)
 
     def setCustomMax(self, var, index, mode):
-        value = self.customMax.get()
+        value = float(self.customMax.get())
         self.process_settings.customMax = float(value)
-        print(self.process_settings.customMax)
 
     def setStand(self):
-        self.process_settings.bStand = self.bStand.get()
+        self.process_settings.bStand = bool(self.bStand.get())
         self.enableStandFrame(self.process_settings.bStand)
-        print(self.process_settings.bStand)
 
     def setStandFormula(self, var, index, mode):
         self.process_settings.standFormula = self.standFormula.get()
-        print(self.process_settings.standFormula)
 
     def setStandBodyLength(self, var, index, mode):
-        value = self.standBodyLength.get()
+        value = float(self.standBodyLength.get())
         self.process_settings.standParams['l'] = float(value)
-        print(self.process_settings.standParams['l'])
 
     def setStandBodyMass(self, var, index, mode):
-        value = self.standBodyMass.get()
+        value = float(self.standBodyMass.get())
         self.process_settings.standParams['m'] = float(value)
-        print(self.process_settings.standParams['m'])
 
     def setStandArticularLength(self, var, index, mode):
-        value = self.standArticularLength.get()
+        value = float(self.standArticularLength.get())
         self.process_settings.standParams['a'] = float(value)
-        print(self.process_settings.standParams['a'])

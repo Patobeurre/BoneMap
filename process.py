@@ -417,7 +417,7 @@ def reconstructImageSection (imagesSampled, index :int, settings) -> cv2.Mat:
     return curImg
 
 
-def launchThreadedProcess (imagesSampled, begin :int, end :int, settings):
+def launchThreadedProcess (imagesSampled, begin :int, end :int, settings, callback):
 
     mapCurv = MapMask((len(imagesSampled), 360))
     mapDist = MapMask((len(imagesSampled), 360))
@@ -514,9 +514,27 @@ def launchThreadedProcess (imagesSampled, begin :int, end :int, settings):
             if (settings.mapTypesContains(EMapType.MODULUS_HALF)):
                 mapModulusHalf.map[ind] = modulusHalf
 
-        print(ind)
+        #print(ind)
+        callback()
 
     return [mapDist, mapCort, mapCurv, mapMoments, mapModulus, mapModulusHalf]
+
+
+def generateMapFromFile (filePath, blur :bool, flipX :bool, flipY :bool):
+
+    mapMask = importMap(filePath)
+
+    if flipX:
+        mapMask.flip(0)
+
+    if flipY:
+        mapMask.flip(1)
+
+    if blur:
+        ksize = (3, 10)
+        cv2.blur(mapMask.map, ksize)
+
+
 
 
 def generateResultMap (mapMask :MapMask, mapName :str, settings):
@@ -647,11 +665,19 @@ class Process:
             cv2.imwrite(reconstructedSerieFolder + "/" + "sec_" + str(nImg) + ".png", curImg)
 
 
+    def updateNbSectionDone(self):
+        return
+
+
     def launch (self):
 
+        print("START")
+        print(type(self.settings.NB_SECTIONS))
         beginSample = self.samplePercentToSections(self.settings.NB_SECTIONS, self.settings.BEGIN_SAMPLE_PERCENT)
         endSample = self.samplePercentToSections(self.settings.NB_SECTIONS, self.settings.END_SAMPLE_PERCENT)
         sampleSize = self.settings.NB_SECTIONS - beginSample - endSample
+
+        print("PREPARE SAMPLE")
 
         imageFiles = self.retreiveSerieImages(self.settings.SERIE_DIR_PATH)
         self.retreiveImagesInfo(self.settings.SERIE_DIR_PATH)
@@ -659,6 +685,8 @@ class Process:
 
         if (self.settings.bFlip):
             imagesSampled = imagesSampled[::-1]
+
+        print("INIT MAPS")
 
         nPic :int = len(imagesSampled)
 
@@ -671,21 +699,25 @@ class Process:
         self.mapModulus = MapMask((nPic, 360))
         self.mapModulusHalf = MapMask((nPic, 360))
 
+        print("LAUNCH THREADS")
 
         p = Pool()
         threadStep = int((nPic - endSample - beginSample) / self.settings.NB_THREAD)
+        self.nbSectionsDone = 0
 
         result = p.starmap(launchThreadedProcess, [
-            (imagesSampled, 0, 50, self.settings),
-            (imagesSampled, 50, 100, self.settings),
-            (imagesSampled, 100, 150, self.settings),
-            (imagesSampled, 150, 200, self.settings),
-            (imagesSampled, 200, 250, self.settings),
-            (imagesSampled, 250, 300, self.settings)
+            (imagesSampled, 0, 50, self.settings, self.updateNbSectionDone),
+            (imagesSampled, 50, 100, self.settings, self.updateNbSectionDone),
+            (imagesSampled, 100, 150, self.settings, self.updateNbSectionDone),
+            (imagesSampled, 150, 200, self.settings, self.updateNbSectionDone),
+            (imagesSampled, 200, 250, self.settings, self.updateNbSectionDone),
+            (imagesSampled, 250, 300, self.settings, self.updateNbSectionDone)
             ])
 
         p.close()
         p.join()
+
+        print("GENERATE RESULTS")
 
         for res in result:
             self.mapDist.merge(res[0])

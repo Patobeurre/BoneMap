@@ -73,6 +73,30 @@ class Combobox(ttk.Combobox):
         super().__init__(parent, **kwargs)
         self["values"] = values
 
+class Progressbar(ttk.Progressbar):
+    """Create a Progressbar object."""
+    def __init__(self, parent, value=0, **kwargs):
+        super().__init__(parent, **kwargs)
+        self['value'] = value
+
+    def progress(self, value):
+        self['value'] += value
+
+
+class ProgressbarWithValue:
+
+    def __init__(self, parent, value=0, maximum=100, **kwargs):
+        Grid.columnconfigure(parent, 0, weight=2)
+        self.progressbar = Progressbar(parent, value=value, maximum=maximum)
+        self.label = Label(parent, text=str(value) + '%')
+        self.progressbar.grid(row=0, column=0, sticky='news')
+        self.label.grid(row=0, column=1, sticky='nsw')
+
+    def update(self, value):
+        self.progressbar.progress(value)
+        self.label.config(text=str(value) + '%')
+
+
 
 class SpinboxLabel:
 

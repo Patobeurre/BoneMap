@@ -1,4 +1,5 @@
 import numpy as np
+import statutils
 
 HEIGHT = 300
 WIDTH = 360
@@ -60,6 +61,9 @@ class MapMask:
         normMap.mask = self.mask
         return normMap
 
+    def _median_absolute_deviation(data, c=1):
+          return robust.mad(data, c)
+
     def getNormMMAD(self):
         mmadMapMask = MapMask(map=np.copy(self.map))
         mmadMapMask.mask = self.mask
@@ -67,7 +71,7 @@ class MapMask:
         values = self.getMapTrueData().flatten()
 
         med = np.median(values)
-        mad = median_absolute_deviation(values)
+        mad = _median_absolute_deviation(values)
 
         mmadMapMask.map -= med
         mmadMapMask.map /= (b * mad)

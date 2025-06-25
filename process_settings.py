@@ -11,7 +11,7 @@ class EMapType(Enum):
     EXTERNAL_RADIUS = 5
     MOMENT_AREA = 6
 
-STAND_FORMULAS = [
+STAND_FORMULAS_PRESETS = [
     "l",
     "a+m",
     "l/2"
@@ -20,6 +20,9 @@ STAND_FORMULAS = [
 
 
 class ProcessSettings:
+    '''
+    All variables used for an analysis
+    '''
 
     MASK_MAX = 255
     MASK_MIN = 0

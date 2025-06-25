@@ -258,7 +258,7 @@ class MainWindow:
         frame = Frame(self.standParamsFrame)
         frame.grid_columnconfigure(1, weight=3)
         Label(frame, text="Formula").grid(row=0, column=0, sticky="nw", padx=5)
-        Combobox(frame, STAND_FORMULAS, textvariable=self.standFormula).grid(row=0, column=1, columnspan=3, sticky="new", padx=5)
+        Combobox(frame, STAND_FORMULAS_PRESETS, textvariable=self.standFormula).grid(row=0, column=1, columnspan=3, sticky="new", padx=5)
         frame.grid(row=1, column=0, columnspan=3, sticky="new")
 
         self.standParamsFrame.grid(row=1, column=0, sticky="news", pady=5)

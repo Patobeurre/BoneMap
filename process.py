@@ -7,7 +7,7 @@ from multiprocessing import Pool
 from utils import *
 from mapmask import MapMask
 from math_interpreter import MathInterpreter
-from process_settings import *
+from data import *
 
 
 # =====

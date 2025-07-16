@@ -75,7 +75,6 @@ class ProcessSettings:
     bInterpolate :bool = False
 
     # Standardization
-
     bStand :bool = False
     standParams = {
         "a" : 0,
@@ -86,7 +85,6 @@ class ProcessSettings:
     standFact :float = 1
 
     # Normalization
-
     bNormMinMax :bool = False
     bNormAvg :bool = False
     bNormMMAD :bool = False
@@ -95,7 +93,6 @@ class ProcessSettings:
 
 
     def mapTypesContains(self, type :EMapType):
-
         return type in self.mapTypes
 
 
@@ -111,10 +108,17 @@ class ProcessSettings:
 
 
     def export(self, filePath :str):
+        '''
+        Serialize variable into a file
+        '''
         with open(filePath, 'w') as f:
             f.write('\n'.join(["%s=%s" % (a, getattr(self, a)) for a in dir(self) if not a.startswith("__") and not callable(getattr(self, a))]))
 
+
     def importFromFile(self, filePath :str):
+        '''
+        Deserialize variable from file
+        '''
         with open(filePath, 'r') as f:
             for line in f:
                 row = line.strip().split('=')

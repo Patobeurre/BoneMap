@@ -1,6 +1,6 @@
 from tklib import *
 from process import Process
-from process_settings import *
+from data import *
 
 
 class MainWindow:

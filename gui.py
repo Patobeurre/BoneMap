@@ -1,4 +1,4 @@
-from tklib import *
+from libs import *
 from process import Process
 from data import *
 

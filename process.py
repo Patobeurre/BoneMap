@@ -6,7 +6,7 @@ import time
 from multiprocessing import Pool
 from utils import *
 from mapmask import MapMask
-from math_interpreter import MathInterpreter
+from libs import MathInterpreter
 from data import *
 
 

@@ -1,5 +1,4 @@
 import numpy as np
-import statutils
 
 HEIGHT = 300
 WIDTH = 360

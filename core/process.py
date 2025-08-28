@@ -3,7 +3,7 @@ import os
 import numpy as np
 import math
 import time
-from multiprocessing import Pool
+from multiprocessing import Pool, Manager
 from utils import *
 from mapmask import MapMask
 from libs import MathInterpreter
@@ -417,7 +417,7 @@ def reconstructImageSection (imagesSampled, index :int, settings) -> cv2.Mat:
     return curImg
 
 
-def launchThreadedProcess (imagesSampled, begin :int, end :int, settings, callback):
+def launchThreadedProcess (imagesSampled, begin :int, end :int, settings, nbSectionDone):
 
     mapCurv = MapMask((len(imagesSampled), 360))
     mapDist = MapMask((len(imagesSampled), 360))
@@ -464,6 +464,7 @@ def launchThreadedProcess (imagesSampled, begin :int, end :int, settings, callba
         mapModulusHalf.mask[ind] = int(bValid)
 
         if not bValid:
+            print(str(ind) + " not valid")
             continue
 
         # Computation
@@ -514,8 +515,9 @@ def launchThreadedProcess (imagesSampled, begin :int, end :int, settings, callba
             if (settings.mapTypesContains(EMapType.MODULUS_HALF)):
                 mapModulusHalf.map[ind] = modulusHalf
 
-        #print(ind)
-        callback()
+        nbSectionDone.value += 1
+        print(nbSectionDone.value)
+
 
     return [mapDist, mapCort, mapCurv, mapMoments, mapModulus, mapModulusHalf]
 
@@ -576,6 +578,11 @@ def generateResultMap (mapMask :MapMask, mapName :str, settings):
 class Process:
 
     settings: ProcessSettings = ProcessSettings()
+
+
+    def __init__(self):
+        manager = Manager()
+        self.nbSectionDone = manager.Value('i', 0)
 
 
     def retreiveSerieImages (self, dirPath :str):
@@ -665,8 +672,10 @@ class Process:
             cv2.imwrite(reconstructedSerieFolder + "/" + "sec_" + str(nImg) + ".png", curImg)
 
 
-    def updateNbSectionDone(self):
-        return
+    def getNbSectionDone(self) -> int:
+        if self.nbSectionDone:
+            return self.nbSectionDone.value
+        return 0
 
 
     def launch (self):
@@ -702,16 +711,18 @@ class Process:
         print("LAUNCH THREADS")
 
         p = Pool()
+        manager = Manager()
+        self.nbSectionDone = manager.Value('i', 0)
+
         threadStep = int((nPic - endSample - beginSample) / self.settings.NB_THREAD)
-        self.nbSectionsDone = 0
 
         result = p.starmap(launchThreadedProcess, [
-            (imagesSampled, 0, 50, self.settings, self.updateNbSectionDone),
-            (imagesSampled, 50, 100, self.settings, self.updateNbSectionDone),
-            (imagesSampled, 100, 150, self.settings, self.updateNbSectionDone),
-            (imagesSampled, 150, 200, self.settings, self.updateNbSectionDone),
-            (imagesSampled, 200, 250, self.settings, self.updateNbSectionDone),
-            (imagesSampled, 250, 300, self.settings, self.updateNbSectionDone)
+            (imagesSampled, 0, 50, self.settings, self.nbSectionDone),
+            (imagesSampled, 50, 100, self.settings, self.nbSectionDone),
+            (imagesSampled, 100, 150, self.settings, self.nbSectionDone),
+            (imagesSampled, 150, 200, self.settings, self.nbSectionDone),
+            (imagesSampled, 200, 250, self.settings, self.nbSectionDone),
+            (imagesSampled, 250, 300, self.settings, self.nbSectionDone)
             ])
 
         p.close()
@@ -756,7 +767,6 @@ class Process:
 
 
 
-
 def main():
 
     process = Process()
@@ -788,3 +798,12 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+def test_threaded_proc(id, num):
+    print(id)
+    while True:
+        time.sleep(1.0)
+        num.value += 1
+        print(num.value)

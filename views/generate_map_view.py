@@ -1,8 +1,15 @@
 from libs import *
 from data import *
+from utils import *
 
 
 class GenerateMapView(Frame):
+
+    def launchGenerateMap(self):
+        mapMask = importMap(self.settings.MAP_FILE_PATH)
+
+        generateResultMap(mapMask, self.settings.OUTPUT_DIR_PATH)
+
 
     def __init__(self, parent, **kwargs):
 
@@ -149,6 +156,11 @@ class GenerateMapView(Frame):
 
         normalizeFrame.grid(row=6, column=0, sticky='new', pady=10)
         self.setNormMinMax()
+
+
+        # Launch button
+
+        Button(self, text="Launch", command=self.launchGenerateMap).grid(row=7, column=1, sticky='se')
 
 
         self.grid(sticky='new', padx=10, pady=10)

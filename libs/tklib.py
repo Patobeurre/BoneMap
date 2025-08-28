@@ -96,6 +96,9 @@ class ProgressbarWithValue:
         self.progressbar.progress(value)
         self.label.config(text=str(value) + '%')
 
+    def start(self, value):
+        self.progressbar.start(value)
+
 
 
 class SpinboxLabel:

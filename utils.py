@@ -45,6 +45,41 @@ def showImageWindow(name :str, img):
     cv2.destroyAllWindows()
 
 
+def generateResultMap (mapMask :MapMask, mapName :str, settings):
+
+    mapMask.computeMinMax()
+    print(str(mapMask.min) + ":" + str(mapMask.max))
+
+    filePath = settings.OUTPUT_DIR_PATH + "/" + mapName + ".txt"
+
+    exportMap(mapMask, filePath)
+
+    if settings.bNormMinMax:
+        filePath = settings.OUTPUT_DIR_PATH + "/" + mapName + "_norm.txt"
+        normMap = mapMask.getNormMinMax(settings.customMin, settings.customMax)
+        exportMap(normMap, filePath)
+
+    if settings.bNormMMAD:
+        filePath = settings.OUTPUT_DIR_PATH + "/" + mapName + "_mmad.txt"
+        mmadMap = mapMask.getNormMMAD()
+        exportMap(mmadMap, filePath)
+
+        filePath = settings.OUTPUT_DIR_PATH + "/" + mapName + "_tanh.txt"
+        mmadMap.map = np.tanh(mmadMap.map)
+        exportMap(mmadMap, filePath)
+
+    if settings.bNormAvg:
+        filePath = settings.OUTPUT_DIR_PATH + "/" + mapName + "_avg.txt"
+        avgMap = mapMask.getNormAvg()
+        exportMap(avgMap, filePath)
+
+    if settings.bBlur:
+        ksize = (3, 10)
+        cv2.blur(mapMask.map, ksize)
+
+    plot_colorMap(mapMask.map, mapMask.min, mapMask.max)
+
+
 def retreiveFilesInFolder(directory :str, extensionFilters):
 
     if not os.path.exists(directory): return

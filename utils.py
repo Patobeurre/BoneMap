@@ -122,6 +122,9 @@ class Point:
         self.x -= other.x
         self.y -= other.y
 
+    def __eq__(self, other) -> bool:
+        return (self.x == other.x and self.y == other.y)
+
     def __repr__(self):
         return "".join(["Point(", str(self.x), ",", str(self.y), ")"])
 
@@ -137,11 +140,11 @@ class Point:
 
 
 class PointB:
-    def __init__(self, x_init, y_init, a_init=0, r_init=0):
-        self.x = x_init
-        self.y = y_init
-        self.angle = a_init
-        self.r = r_init
+    def __init__(self, x=0, y=0, a=0, r=0):
+        self.x = x
+        self.y = y
+        self.angle = a
+        self.r = r
 
     def toSimplePoint(self):
         return Point(self.x, self.y)

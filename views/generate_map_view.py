@@ -26,13 +26,20 @@ class GenerateMapView(Frame):
 
         selectorFrame = Frame(self)
         selectorFrame.rowconfigure(0, weight=1)
+        selectorFrame.rowconfigure(1, weight=1)
         selectorFrame.columnconfigure(0, weight=1)
 
         self.mapFilePath = StringVar()
         self.mapFilePath.trace_add("write", self.setMapFilePath)
         frame = Frame(selectorFrame)
-        FileSelector(selectorFrame, "Select map file : ", variable=self.mapFilePath)
+        FileSelector(frame, "Select map file : ", variable=self.mapFilePath)
         frame.grid(row=0, column=0, sticky='nsew', pady=5)
+
+        self.outputFolderPath = StringVar()
+        self.outputFolderPath.trace_add("write", self.setOutputDirPath)
+        frame = Frame(selectorFrame)
+        DirectorySelector(frame, "Select output folder", variable=self.outputFolderPath)
+        frame.grid(row=1, column=0, sticky='nsew', pady=5)
 
         selectorFrame.grid(row=0, column=0, sticky='new')
 
@@ -160,7 +167,7 @@ class GenerateMapView(Frame):
 
         # Launch button
 
-        Button(self, text="Launch", command=self.launchGenerateMap).grid(row=7, column=1, sticky='se')
+        Button(self, text="Generate", command=self.launchGenerateMap).grid(row=7, column=0, sticky='se')
 
 
         self.grid(sticky='new', padx=10, pady=10)
@@ -177,8 +184,12 @@ class GenerateMapView(Frame):
 
 
     def setMapFilePath(self, var, index, mode):
-        MAP_FILE_PATH = self.mapFilePath.get()
-        print("File path: " + MAP_FILE_PATH)
+        self.settings.MAP_FILE_PATH = self.mapFilePath.get()
+        print("File path: " + self.settings.MAP_FILE_PATH)
+    
+    def setOutputDirPath(self, var, index, mode):
+        self.settings.OUTPUT_DIR_PATH = self.outputFolderPath.get()
+        print("File path: " + self.settings.OUTPUT_DIR_PATH)
 
     def setBlur(self):
         self.settings.bBlur = bool(self.bBlur.get())

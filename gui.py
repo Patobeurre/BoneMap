@@ -1,6 +1,6 @@
 from libs import *
-from process import Process
 from data import *
+from core import *
 
 
 class MainWindow:
